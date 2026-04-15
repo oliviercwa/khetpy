@@ -1,0 +1,12 @@
+{
+  "name": "khet-v18-js",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=10"
+  },
+  "scripts": {
+    "tournament": "node harness.js",
+    "self-play": "node harness.js --games 4 --seed 0"
+  }
+}

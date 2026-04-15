@@ -6,6 +6,7 @@ import multiprocessing as mp
 from collections import Counter
 from concurrent.futures import ProcessPoolExecutor, as_completed
 
+import ai_api
 from game_v13 import init, do, terminal
 from worker import run as worker_run
 
@@ -66,6 +67,42 @@ class WorkerHandle:
         }
         return r['move'], dt, r['total_nodes'], r.get('depth', 0), tt, r.get('otl2_events', [])
 
+    def setup(self, name, initial_positions, is_first_player, t, ponder, seed=0):
+        """Send setup command to worker (new functional API)."""
+        self.parent.send({
+            'cmd': 'setup',
+            'name': name,
+            'initial_positions': initial_positions,
+            'is_first_player': is_first_player,
+            't': t,
+            'ponder': ponder,
+            'seed': seed,
+        })
+        r = self.parent.recv()
+        if not r.get('ok'):
+            raise RuntimeError(f'worker setup failed: {r}')
+
+    def next_move(self, opponent_action):
+        """Send next_move command; returns (action_dict, elapsed_s, total_nodes, depth, tt, otl2)."""
+        t0 = time.perf_counter()
+        self.parent.send({'cmd': 'next_move', 'opponent_action': opponent_action})
+        r = self.parent.recv()
+        dt = time.perf_counter() - t0
+        if not r.get('ok'):
+            raise RuntimeError(f'worker next_move failed: {r}')
+        tt = {
+            'probes':   r.get('tt_probes', 0),
+            'hits':     r.get('tt_hits', 0),
+            'cutoffs':  r.get('tt_cutoffs', 0),
+            'move_used': r.get('tt_move_used', 0),
+            'peak':     r.get('tt_peak', 0),
+            'p_nodes':  r.get('ponder_nodes', 0),
+            'p_stores': r.get('ponder_stores', 0),
+            'p_hit':    r.get('ponder_hit_on_stored', 0),
+            'p_cut':    r.get('ponder_cutoff_on_stored', 0),
+        }
+        return r['action'], dt, r['total_nodes'], r.get('depth', 0), tt, r.get('otl2_events', [])
+
     def close(self):
         try:
             self.parent.send({'cmd': 'close'})
@@ -105,9 +142,12 @@ def _fmt_board(s):
 
 def play(seed, p1_name, p2_name, move_time, w1, w2, ponder=False,
          better_eval=True, quiescence=True, log=None):
-    """Play one game. Resets both workers first — per-game isolation
-    including a fresh TT on each side. Starting position comes straight
-    from init(seed), which is already fully randomized per the rules.
+    """Play one game using the setup/next_move functional API.
+
+    Both workers are initialised with setup() at the start of each game,
+    giving per-game isolation (fresh TT, fresh state). The canonical game
+    state is maintained here for validation, logging, and statistics; each
+    AI also tracks its own internal copy via next_move().
     """
     s = init(seed)
     if log is not None:
@@ -115,10 +155,9 @@ def play(seed, p1_name, p2_name, move_time, w1, w2, ponder=False,
         log.write('-- init --\n')
         log.write(_fmt_board(s) + '\n')
 
-    w1.reset(p1_name, 1, move_time, ponder, seed,
-             better_eval=better_eval, quiescence=quiescence)
-    w2.reset(p2_name, 2, move_time, ponder, seed,
-             better_eval=better_eval, quiescence=quiescence)
+    initial_positions = ai_api.make_initial_positions(s)
+    w1.setup(p1_name, initial_positions, True,  move_time, ponder, seed)
+    w2.setup(p2_name, initial_positions, False, move_time, ponder, seed)
 
     m = 0
     max_t = {1: 0.0, 2: 0.0}
@@ -126,30 +165,32 @@ def play(seed, p1_name, p2_name, move_time, w1, w2, ponder=False,
     total_nodes = {1: 0, 2: 0}
     depths = {1: [], 2: []}
     times = {1: [], 2: []}
-    otl2_events = []  # Collected OTL-2 diagnostic events.
+    otl2_events = []
 
     tt_final = {1: None, 2: None}
+    last_action = {1: None, 2: None}   # last JS-style action each player played
     if __debug__:
         _move_hist = []  # [(player, move_type, piece_type), ...]
     while not terminal(s) and m < 200:
-        worker = w1 if s.turn == 1 else w2
-        pid = s.turn
-        act, dt, tn, depth, tt, otl2 = worker.choose(s)
+        pid    = s.turn
+        worker = w1 if pid == 1 else w2
+        opp    = 3 - pid
+        act_js, dt, tn, depth, tt, otl2 = worker.next_move(last_action[opp])
         otl2_events.extend(otl2)
         if dt > max_t[pid]:
             max_t[pid] = dt
         if dt > move_time:
             violations[pid] += 1
         total_nodes[pid] = tn
-        tt_final[pid] = tt  # keep latest — counters are cumulative
-        # Only record depths/times for moves where a search actually ran.
-        # Instant returns (immediate win, no actions) leave depth=0 and
-        # would otherwise skew the min.
+        tt_final[pid] = tt
         if depth > 0:
             depths[pid].append(depth)
             times[pid].append(dt)
-        if not act:
+        if not act_js:
             break
+        # Convert JS action → internal tuple for canonical state update & logging.
+        act = ai_api.action_to_internal(act_js, s)
+        last_action[pid] = act_js
         if __debug__:
             _mt = act[0]
             if _mt in ('r', 'm'):
@@ -163,7 +204,7 @@ def play(seed, p1_name, p2_name, move_time, w1, w2, ponder=False,
         m += 1
         if log is not None:
             log.write(f'-- move {m} P{pid} ({p1_name if pid==1 else p2_name}) '
-                      f'played {act} in {dt*1000:.1f}ms depth={depth} --\n')
+                      f'played {act_js} in {dt*1000:.1f}ms depth={depth} --\n')
             log.write(_fmt_board(s) + '\n')
 
     def _stats(xs):

@@ -14,8 +14,39 @@ admitting a few high-quality placements at each interior node.
 import time
 import random
 import threading
+import ai_api
+import game as _game
 from game_v13 import do, terminal, evalf, inb
 from move_ordering import score_moves, staged_interior_moves, _move_family
+
+# ---------------------------------------------------------------------------
+# Module-level functional API (setup / next_move)
+# ---------------------------------------------------------------------------
+
+_state  = None
+_player = None
+_ai     = None
+
+
+def setup(initial_positions, is_first_player, t=0.18, ponder=False):
+    """Initialise the AI for a new game.  Returns True."""
+    global _state, _player, _ai
+    _player = 1 if is_first_player else 2
+    _state  = ai_api.state_from_initial_positions(initial_positions)
+    _ai     = AB(_player, t=t, ponder=ponder)
+    return True
+
+
+def next_move(opponent_action):
+    """Apply opponent's last action (JS dict or None) and return our move as a JS dict."""
+    global _state
+    if opponent_action is not None:
+        internal_opp = ai_api.action_to_internal(opponent_action, _state)
+        _state = _game.do(_state, internal_opp)
+    move    = _ai.choose(_state)
+    js_move = ai_api.internal_to_action(move, _state, _player)
+    _state  = _game.do(_state, move)
+    return js_move
 
 # --- OTL-2 diagnostic logging (opt-in) ---
 DEBUG_OTL2_LOG = False

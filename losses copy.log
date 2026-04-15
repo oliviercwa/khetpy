@@ -1,0 +1,93 @@
+=============================================================================
+=== Pair #1 | seed=45 | v19 dominates v20 | game1=v19 wins game2=v19 wins ===
+=============================================================================
+
+--- Game 1 (v19 starts): P1=v19 P2=v20 | plies=15 | outcome=v19 wins | reason=P1 captured P2 pharaoh ---
+
+Initial board:
+     0    1    2    3    4    5    6    7    8    9
+0  .    1XE  .    .    .    .    .    .    .    .   
+1  .    .    .    .    .    .    .    .    .    .   
+2  .    .    .    .    .    1HS  .    .    1AS  .   
+3  .    .    .    .    1SE  .    .    .    .    .   
+4  .    .    .    .    .    1AS  .    .    .    .   
+5  .    .    .    .    2AN  .    .    .    .    .   
+6  .    .    .    .    .    2SW  .    .    .    .   
+7  .    2AN  .    .    2HS  .    .    .    .    .   
+8  .    .    .    .    .    .    .    .    .    .   
+9  .    .    .    .    .    .    .    .    2XW  .   
+turn=1 ply=0 win=0
+
+Moves:
+  1. P1 (v19) d=4 n=76056: {"action":"PLACE","cell":-1,"result":{"destination":94,"orientation":9}}
+  2. P2 (v20) d=5 n=90240: {"action":"PLACE","cell":-2,"result":{"destination":54,"orientation":9}}
+  3. P1 (v19) d=4 n=87104: {"action":"PLACE","cell":-1,"result":{"destination":53,"orientation":9}}
+  4. P2 (v20) d=5 n=82360: {"action":"PLACE","cell":-2,"result":{"destination":3,"orientation":90}}
+  5. P1 (v19) d=4 n=54056: {"action":"PLACE","cell":-1,"result":{"destination":4,"orientation":90}}
+  6. P2 (v20) d=6 n=71624: {"action":"ROTATE","cell":8,"result":"ANTICLOCKWISE"}
+  7. P1 (v19) d=4 n=51384: {"action":"PLACE","cell":-1,"result":{"destination":31,"orientation":9}}
+  8. P2 (v20) d=3 n=49368: {"action":"PLACE","cell":-2,"result":{"destination":13,"orientation":9}}
+  9. P1 (v19) d=3 n=10120: {"action":"PLACE","cell":-1,"result":{"destination":23,"orientation":9}}
+  10. P2 (v20) d=4 n=77664: {"action":"PLACE","cell":-2,"result":{"destination":83,"orientation":9}}
+  11. P1 (v19) d=4 n=79928: {"action":"PLACE","cell":-1,"result":{"destination":84,"orientation":99}}
+  12. P2 (v20) d=5 n=59232: {"action":"PLACE","cell":-2,"result":{"destination":43,"orientation":99}}
+  13. P1 (v19) d=3 n=10127: {"action":"PLACE","cell":-1,"result":{"destination":82,"orientation":99}}
+  14. P2 (v20) d=5 n=72920: {"action":"PLACE","cell":-2,"result":{"destination":32,"orientation":9}}
+  15. P1 (v19) d=0 n=0: {"action":"PLACE","cell":-1,"result":{"destination":52,"orientation":9}}
+
+Final board:
+     0    1    2    3    4    5    6    7    8    9
+0  .    1XE  .    .    1PE  .    .    .    .    .   
+1  .    .    1PS  .    1PS  .    .    .    .    .   
+2  .    .    .    .    .    1HS  .    .    1AS  .   
+3  .    .    .    .    1SE  .    .    .    .    .   
+4  .    .    1PE  .    2PE  1AS  .    .    .    .   
+5  .    .    .    2PS  .    .    .    .    .    .   
+6  .    1PE  2PE  .    .    2SW  .    .    .    .   
+7  .    2AN  .    1PE  .    .    .    .    .    .   
+8  .    .    .    2PE  .    .    .    .    .    .   
+9  .    .    .    2PW  1PW  .    .    .    2XS  .   
+turn=2 ply=15 win=1
+
+--- Game 2 (v20 starts): P1=v20 P2=v19 | plies=10 | outcome=v19 wins | reason=P2 captured P1 pharaoh ---
+
+Initial board:
+     0    1    2    3    4    5    6    7    8    9
+0  .    1XE  .    .    .    .    .    .    .    .   
+1  .    .    .    .    .    .    .    .    .    .   
+2  .    .    .    .    .    1HS  .    .    1AS  .   
+3  .    .    .    .    1SE  .    .    .    .    .   
+4  .    .    .    .    .    1AS  .    .    .    .   
+5  .    .    .    .    2AN  .    .    .    .    .   
+6  .    .    .    .    .    2SW  .    .    .    .   
+7  .    2AN  .    .    2HS  .    .    .    .    .   
+8  .    .    .    .    .    .    .    .    .    .   
+9  .    .    .    .    .    .    .    .    2XW  .   
+turn=1 ply=0 win=0
+
+Moves:
+  1. P1 (v20) d=4 n=70848: {"action":"PLACE","cell":-1,"result":{"destination":94,"orientation":9}}
+  2. P2 (v19) d=4 n=71792: {"action":"EXCHANGE","cell":35,"result":24}
+  3. P1 (v20) d=3 n=13130: {"action":"PLACE","cell":-1,"result":{"destination":31,"orientation":9}}
+  4. P2 (v19) d=5 n=59008: {"action":"PLACE","cell":-2,"result":{"destination":41,"orientation":9}}
+  5. P1 (v20) d=3 n=9666: {"action":"PLACE","cell":-1,"result":{"destination":33,"orientation":9}}
+  6. P2 (v19) d=5 n=74720: {"action":"PLACE","cell":-2,"result":{"destination":3,"orientation":90}}
+  7. P1 (v20) d=4 n=62112: {"action":"PLACE","cell":-1,"result":{"destination":5,"orientation":90}}
+  8. P2 (v19) d=6 n=65224: {"action":"ROTATE","cell":8,"result":"CLOCKWISE"}
+  9. P1 (v20) d=3 n=9167: {"action":"PLACE","cell":-1,"result":{"destination":33,"orientation":9}}
+  10. P2 (v19) d=0 n=0: {"action":"PLACE","cell":-2,"result":{"destination":78,"orientation":90}}
+
+Final board:
+     0    1    2    3    4    5    6    7    8    9
+0  .    1XE  .    .    1PE  .    .    .    .    .   
+1  .    .    .    .    .    .    .    .    .    .   
+2  .    .    .    .    .    .    .    .    2PW  .   
+3  .    .    .    .    1SE  .    .    .    .    .   
+4  .    .    .    .    .    1AS  .    .    .    .   
+5  .    2PE  .    .    2AN  .    .    .    .    .   
+6  .    1PE  .    1PE  .    2HS  .    .    .    .   
+7  .    2AN  .    .    2SW  .    .    .    .    .   
+8  .    .    .    .    .    .    .    .    .    .   
+9  .    .    .    2PW  .    1PW  .    .    2XN  .   
+turn=1 ply=10 win=2
+

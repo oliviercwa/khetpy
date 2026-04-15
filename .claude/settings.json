@@ -74,10 +74,34 @@
       "Bash(python cli.py --games 10 --workers 3 --p1 v16 --p2 v17 --time 0.18 --swap --debug-otl2)",
       "Bash(python cli.py --games 20 --workers 3 --p1 v16 --p2 v17 --time 0.18 --swap --debug-otl2)",
       "Bash(python cli.py --games 1 --p1 v17 --p2 v18 --time 0.18 --swap)",
-      "Bash(python cli.py --games 50 --workers 10 --p1 v17 --p2 v18 --time 0.18 --swap)"
+      "Bash(python cli.py --games 50 --workers 10 --p1 v17 --p2 v18 --time 0.18 --swap)",
+      "Bash(node -e ':*)",
+      "Bash(node _debug_order.js)",
+      "Bash(node _debug_match.js)",
+      "Bash(node _test_fixed_depth.js)",
+      "Bash(node _bench_final.js)",
+      "Bash(node js/tournament.js --games 1 --seed 0 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/tournament.js --games 4 --seed 10 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/tournament.js --games 2 --seed 11 --turn-time-ms 50 --search-time-ms 180)",
+      "Bash(node js/tournament.js --a v18 --b v18 --games 2 --seed 11 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/tournament.js --a v18 --b v19 --games 2 --seed 11 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/bundle.js --version v19)",
+      "Bash(node js/bundle.js --version v18)",
+      "Bash(node js/tournament.js --a v18 --b v19 --games 10 --seed 0 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/tournament.js --a v19 --b v18 --games 10 --seed 0 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/harness.js -g 5 -s 0 -t 0.18)",
+      "Bash(node js/tournament.js --a v18 --b v18 --games 5 --seed 0 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/tournament.js --games 4 --seed 0 --a v18 --b v19 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/uber.js --workers 2 --games 4 --seed 20 --a v18 --b v19 --turn-time-ms 250 --search-time-ms 180)",
+      "Bash(node js/uber.js --workers 1 --games 20 --seed 100 --a v18 --b v19)",
+      "Bash(node js/uber.js --workers 4 --games 20 --seed 100 --a v18 --b v19)",
+      "Bash(node js/tournament.js --games 2 --seed 105 --a v18 --b v19)",
+      "Bash(node js/uber.js --workers 1 --games 2 --seed 105 --a v18 --b v19)",
+      "Bash(node js/uber.js --workers 4 --games 40 --seed 200 --a v18 --b v19 --turn-time-ms 250 --search-time-ms 180)"
     ],
     "additionalDirectories": [
-      "d:\\src\\laser_chess_v15_center_bonus"
+      "d:\\src\\laser_chess_v15_center_bonus",
+      "c:\\src\\khetpy\\js"
     ]
   }
 }

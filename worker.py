@@ -20,6 +20,7 @@ thread keeps working while the worker is blocked in conn.recv() waiting
 for the next command; the next choose() stops it. No ponder messages
 cross the pipe.
 """
+import importlib
 import random
 
 
@@ -50,14 +51,58 @@ def _build_ai(name, pl, t, ponder, better_eval=True, quiescence=True):
     return AB(pl, t, ponder=ponder)
 
 
+def _mod_name_for(name):
+    if name in ('v17_old', 'v18_old', 'v19_old'):
+        return f'archive_ai.ai_ab_{name}'
+    return f'ai_ab_{name}'
+
+
 def run(conn):
     ai = None
+    active_mod = None   # module used by setup/next_move protocol
     try:
         while True:
             msg = conn.recv()
             cmd = msg.get('cmd')
 
-            if cmd == 'enable_otl2':
+            if cmd == 'setup':
+                mod = importlib.import_module(_mod_name_for(msg['name']))
+                random.seed(msg.get('seed', 0))
+                mod.setup(
+                    msg['initial_positions'],
+                    msg['is_first_player'],
+                    t=msg.get('t', 0.18),
+                    ponder=msg.get('ponder', False),
+                )
+                active_mod = mod
+                conn.send({'ok': True})
+
+            elif cmd == 'next_move':
+                js_move = active_mod.next_move(msg.get('opponent_action'))
+                ai_inst = active_mod._ai
+                otl2_buf = []
+                buf = getattr(ai_inst, '_otl2_buf', None)
+                if buf:
+                    otl2_buf = list(buf)
+                    buf.clear()
+                conn.send({
+                    'ok': True,
+                    'action': js_move,
+                    'total_nodes': ai_inst.total_nodes,
+                    'depth': getattr(ai_inst, 'last_depth', 0),
+                    'tt_probes': getattr(ai_inst, 'tt_probes', 0),
+                    'tt_hits': getattr(ai_inst, 'tt_hits', 0),
+                    'tt_cutoffs': getattr(ai_inst, 'tt_cutoffs', 0),
+                    'tt_move_used': getattr(ai_inst, 'tt_move_used', 0),
+                    'tt_peak': getattr(ai_inst, 'tt_peak', 0),
+                    'ponder_nodes': getattr(ai_inst, 'ponder_nodes', 0),
+                    'ponder_stores': getattr(ai_inst, 'ponder_stores', 0),
+                    'ponder_hit_on_stored': getattr(ai_inst, 'ponder_hit_on_stored', 0),
+                    'ponder_cutoff_on_stored': getattr(ai_inst, 'ponder_cutoff_on_stored', 0),
+                    'otl2_events': otl2_buf,
+                })
+
+            elif cmd == 'enable_otl2':
                 import ai_ab_v17
                 ai_ab_v17.DEBUG_OTL2_LOG = True
                 ai_ab_v17._otl2_worker_id = msg.get('worker_id')
